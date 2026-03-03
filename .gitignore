@@ -1,0 +1,40 @@
+*.joblib
+*.pkl
+.joblib/
+joblib_cache/
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+*.egg-info/
+.eggs/
+
+.vscode/
+.idea/
+*.swp
+*~
+.nyt
+
+venv/
+.venv/
+env/
+.env/
+lib/
+include/
+
+*.egg
+*.whl
+
+.pytest_cache/
+.coverage
+
+.DS_Store # macOS files
+Thumbs.db # Windows files
+
+*.log
+*.sqlite3
+data/
+logs/
+.env # Environment variables file
+secrets.toml
+credentials.json

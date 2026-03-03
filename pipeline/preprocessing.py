@@ -4,6 +4,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer  
 from sklearn.tree import DecisionTreeClassifier 
 from sklearn.impute import SimpleImputer
+import os
 
 caracteristicasNumericas = ['tenure', 'MonthlyCharges', 'TotalCharges']
 caracteristicasNominales = ['PaymentMethod', 'InternetService']
@@ -12,12 +13,14 @@ caracteristicasBinarias= ['gender' ,'SeniorCitizen' , 'Partner' ,'StreamingMovie
                                 'OnlineSecurity' ,'Dependents', 'PhoneService', 'MultipleLines', 'PaperlessBilling']
 caracteristicasOrdinales =['Contract']
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_PATH = os.path.join(BASE_DIR, '..', 'data', 'WA_Fn-UseC_-Telco-Customer-Churn.csv')
 def leerDataset():
-    return pd.read_csv('../data/WA_Fn-UseC_-Telco-Customer-Churn.csv')
+    return pd.read_csv(DATA_PATH)
     
-def arbolDesicion():
+def arbolDesicion(criterion, classWeight, maxDepth):
     preprocesador  = construirPipeline()
-    arbolDesicion = DecisionTreeClassifier(random_state=1,criterion='entropy', class_weight='balanced' ,max_depth=3)
+    arbolDesicion = DecisionTreeClassifier(random_state=1,criterion=criterion, class_weight=classWeight ,max_depth=maxDepth)
     pipeline = Pipeline(
         steps=[
             ('preprocesador', preprocesador),
