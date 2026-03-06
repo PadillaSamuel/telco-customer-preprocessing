@@ -33,7 +33,6 @@ Thumbs.db # Windows files
 
 *.log
 *.sqlite3
-data/
 logs/
 .env # Environment variables file
 secrets.toml
