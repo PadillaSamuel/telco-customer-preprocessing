@@ -84,6 +84,10 @@ class DatasetService:
 
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
         return self._imagen64()
-
+    
+    def listarDataset(self, limite):
+        dfLimpio = self.dataset.head(limite).fillna("")
+        return dfLimpio.to_dict(orient="records")
+        
 
 dataService = DatasetService()
