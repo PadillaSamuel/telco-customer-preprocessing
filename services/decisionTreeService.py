@@ -36,7 +36,7 @@ class ArbolService:
         )
         pipeline.fit(Xtrain, Ytrain)
 
-        Ypredict = self.predecir(Xtest)
+        Ypredict = pipeline.predict(Xtest)
 
         reporte = classification_report(Ytest, Ypredict, output_dict=True)
         arbolPNG = self._graficarArbol(pipeline, hiperparametros.maxDepth)

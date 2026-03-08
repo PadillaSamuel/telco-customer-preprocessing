@@ -5,13 +5,14 @@ from sklearn.metrics import confusion_matrix, classification_report, ConfusionMa
 from sklearn.tree import plot_tree
 from pipeline.preprocessing import  separarCaracteristicas,leerDataset, arbolDesicion
 import matplotlib.pyplot as plt
+from services.datasetService import dataService
 RUTA_MODELO= Path('models/decisionTree.joblib')
 CRITERION='entropy'
 CLASS_WEIGHT= 'balanced'
 MAX_DEPTH= 3
 
 def main():    
-    df  = leerDataset()
+    df  = leerDataset(dataService)
     caracteristicas, objetivo = separarCaracteristicas(df, 'Churn')
     
     Xtrain, Xtest, Ytrain,  Ytest = train_test_split(

@@ -1,12 +1,12 @@
 from fastapi import APIRouter
-import pandas as pd
 from pydantic import BaseModel
-from services.decisionTreeService import ArbolService
-from services.datasetService import dataService 
-router = APIRouter(
-    prefix="/telco/arbol", tags=['Arbol Decisión']
-)
+from services.datasetService import dataService
+from services.randomforestService import RandomForestService
+import pandas as pd
 
+router = APIRouter(prefix="/telco/randomforest", tags=["RandomForest"])
+
+randomForestService = RandomForestService()
 FEATURE_COLUMNS = [
     "gender",
     "SeniorCitizen",
@@ -52,11 +52,15 @@ FIELD_NAME_MAP = {
 }
 
 
-
-class HiperparametrosArbol(BaseModel):
+class Hiperparametros(BaseModel):
+    nEstimator: int = 100
     criterion: str = "entropy"
-    classWeight: str = "balanced"
     maxDepth: int = 3
+    classWeight: str = "balanced"
+    maxFeatures: str = "sqrt"
+    bootstrap: bool = True
+    maxSamples: float = 2 / 3
+    oobScore: bool = True
 
 
 class TelcoCaracteristicas(BaseModel):
@@ -81,26 +85,31 @@ class TelcoCaracteristicas(BaseModel):
     total_charges: float
 
 
-arbolService = ArbolService()
-
-
 @router.post("/entrenar")
-async def entrenar(hiperparametros: HiperparametrosArbol):
-    reporte, arbol, matriz = arbolService.entrenar(dataService,hiperparametros)
-    return {"reporte": reporte, "arbol_base64": arbol, "matriz_base64": matriz}
+async def entrenar(hiperparametros: Hiperparametros):
+    reporte, outOfBag, matrizPNG, importanciaCaracteristicas, arboles = (
+        randomForestService.entrenar(dataService, hiperparametros)
+    )
+    return {
+        "reporte": reporte,
+        "outOfBag": outOfBag,
+        "matriz_base64": matrizPNG,
+        "importancia_caracteristicas_base64": importanciaCaracteristicas,
+        "arboles_base64": arboles,
+    }
+
 
 @router.post("/predecir")
 async def predecir(caracteristicas: TelcoCaracteristicas):
     datos = caracteristicas.model_dump()
-    
     diccionario = {}
+    
     for key, value in datos.items():
         columnaModelo = FIELD_NAME_MAP.get(key, key)
         diccionario[columnaModelo] = value
+    
     df = pd.DataFrame([diccionario])[FEATURE_COLUMNS]
     
-    prediccion = arbolService.predecir(df)
+    prediccion = randomForestService.predecir(df)
     
-    resultado = prediccion[0] 
-    
-    return {"prediccion": str(resultado)}
+    return {"prediccion": str(prediccion[0])}

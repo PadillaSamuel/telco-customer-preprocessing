@@ -15,7 +15,6 @@ caracteristicasBinarias= ['gender' ,'SeniorCitizen' , 'Partner' ,'StreamingMovie
 caracteristicasOrdinales =['Contract']
 
 def leerDataset(service):
-    print(len(service.leerDataset()))
     return service.leerDataset()
     
 def arbolDesicion(criterion, classWeight, maxDepth):

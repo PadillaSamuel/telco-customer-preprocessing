@@ -11,7 +11,7 @@ import numpy as np
 from sklearn import tree
 
 class RandomForestService:
-    def __init__(self, modelo=""):
+    def __init__(self, modelo="models/randomForest.joblib"):
         self.RUTA_MODELO = Path(modelo)
         self.pipeline = None
 
@@ -37,15 +37,13 @@ class RandomForestService:
         )
         pipeline.fit(Xtrain, Ytrain)
 
-        Ypredict = self.predecir(Xtest)
+        Ypredict = pipeline.predict(Xtest)
         reporte = classification_report(Ytest, Ypredict, output_dict=True)
         outOfBag = getattr(pipeline.named_steps["randomForest"], "oob_score_", None)
-        arboles = self._graficarArboles(pipeline, caracteristicas)
+        arboles = self._graficarArboles(pipeline)
 
         matrizPNG = self._graficarMatriz(Ytest, Ypredict, pipeline.classes_)
-        importanciaCaracteristicas = self._graficarImportanciaCaracteristicas(
-            pipeline, caracteristicas.columns[:]
-        )
+        importanciaCaracteristicas = self._graficarImportanciaCaracteristicas(pipeline)
         self._guardarModelo(pipeline)
         return reporte, outOfBag, matrizPNG, importanciaCaracteristicas, arboles
 
@@ -53,35 +51,43 @@ class RandomForestService:
         self._cargarRandomForest()
         return self.pipeline.predict(caracteristicas)
 
-    def _graficarArboles(self, pipeline, caracteristicas):
+    def _graficarArboles(self, pipeline):
         fig, axes = plt.subplots(nrows=2, ncols=5, figsize=(25, 10))
 
         axes = axes.flatten()
 
         estimadores = pipeline.named_steps["randomForest"].estimators_
+        caracteristicas = pipeline.named_steps["preprocesador"].get_feature_names_out()
 
         for i in range(10):
             tree.plot_tree(
                 estimadores[i],
-                feature_names=caracteristicas.columns[:],
+                feature_names=caracteristicas,
                 ax=axes[i],
                 filled=True,
                 max_depth=2,
                 fontsize=8,
             )
-        axes[i].set_title(f"Árbol {i+1}")
+            axes[i].set_title(f"Árbol {i+1}")
+
         plt.tight_layout()
         return self._imagen64()
 
-    def _graficarImportanciaCaracteristicas(self, pipeline, caracteristicasNombres):
+    def _graficarImportanciaCaracteristicas(self, pipeline):
         importancias = pipeline.named_steps["randomForest"].feature_importances_
         indices = np.argsort(importancias)
-
+        caracteristicasNombres = pipeline.named_steps[
+            "preprocesador"
+        ].get_feature_names_out()
         plt.figure(figsize=(10, 6))
-        plt.title("Importancia de las Variables")
-        plt.barh(range(len(indices)), importancias[indices], align="center")
-        plt.yticks(range(len(indices)), [caracteristicasNombres[i] for i in indices])
-        plt.xlabel("Importancia Relativa")
+        plt.title("Importancia de Variables")
+
+        plt.barh(range(len(indices)), importancias[indices])
+        plt.yticks(range(len(indices)), caracteristicasNombres[indices])
+
+        plt.xlabel("Importancia relativa")
+
+        plt.tight_layout()
         return self._imagen64()
 
     def _graficarMatriz(self, Ytest, Ypredict, classes):
