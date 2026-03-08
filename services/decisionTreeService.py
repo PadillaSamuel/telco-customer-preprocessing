@@ -24,11 +24,11 @@ class ArbolService:
         df = leerDataset(service)
 
         caracteristicas, etiquetas = separarCaracteristicas(df, "Churn")
-        
+
         Xtrain, Xtest, Ytrain, Ytest = train_test_split(
             caracteristicas, etiquetas, test_size=0.2
         )
-        
+
         pipeline = arbolDesicion(
             hiperparametros.criterion,
             hiperparametros.classWeight,
@@ -36,7 +36,7 @@ class ArbolService:
         )
         pipeline.fit(Xtrain, Ytrain)
 
-        Ypredict = pipeline.predict(Xtest)
+        Ypredict = self.predecir(Xtest)
 
         reporte = classification_report(Ytest, Ypredict, output_dict=True)
         arbolPNG = self._graficarArbol(pipeline, hiperparametros.maxDepth)

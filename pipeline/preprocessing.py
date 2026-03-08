@@ -4,6 +4,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer  
 from sklearn.tree import DecisionTreeClassifier 
 from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestClassifier
 import os
 
 caracteristicasNumericas = ['tenure', 'MonthlyCharges', 'TotalCharges']
@@ -28,6 +29,18 @@ def arbolDesicion(criterion, classWeight, maxDepth):
     )
     return pipeline
 
+def randomForest(nEstimators, criterion, maxDepth, classWeight, maxFeatures, bootstrap, maxSamples, oobScore):
+    preprocesador= construirPipeline()
+    randomForest = RandomForestClassifier(n_estimators=nEstimators, criterion= criterion, 
+                                          max_depth=maxDepth, class_weight= classWeight, max_features=maxFeatures, 
+                                          bootstrap=bootstrap, max_samples=maxSamples, oob_score=oobScore)
+    pipeline = Pipeline(
+        steps=[
+            ('preprocesador' ,preprocesador), 
+            ('randomForest', randomForest)
+        ]
+    )
+    return pipeline
 
 def construirPipeline():
     transformadorNumerico = Pipeline(
