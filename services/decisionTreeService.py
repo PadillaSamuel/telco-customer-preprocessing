@@ -19,9 +19,9 @@ class ArbolService:
     def _cargarArbol(self):
         self.pipeline = joblib.load(self.RUTA_MODELO)
 
-    def entrenar(self, hiperparametros):
+    def entrenar(self, service, hiperparametros):
 
-        df = leerDataset()
+        df = leerDataset(service)
 
         caracteristicas, etiquetas = separarCaracteristicas(df, "Churn")
         

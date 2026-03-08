@@ -13,10 +13,9 @@ caracteristicasBinarias= ['gender' ,'SeniorCitizen' , 'Partner' ,'StreamingMovie
                                 'OnlineSecurity' ,'Dependents', 'PhoneService', 'MultipleLines', 'PaperlessBilling']
 caracteristicasOrdinales =['Contract']
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_PATH = os.path.join(BASE_DIR, '..', 'data', 'WA_Fn-UseC_-Telco-Customer-Churn.csv')
-def leerDataset():
-    return pd.read_csv(DATA_PATH)
+def leerDataset(service):
+    print(len(service.leerDataset()))
+    return service.leerDataset()
     
 def arbolDesicion(criterion, classWeight, maxDepth):
     preprocesador  = construirPipeline()

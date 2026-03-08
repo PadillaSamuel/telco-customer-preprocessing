@@ -2,7 +2,7 @@ from fastapi import APIRouter
 import pandas as pd
 from pydantic import BaseModel
 from services.decisionTreeService import ArbolService
-
+from services.datasetService import dataService 
 router = APIRouter(
     prefix="/telco/arbol", tags=['Arbol Decisión']
 )
@@ -86,7 +86,7 @@ arbolService = ArbolService()
 
 @router.post("/entrenar")
 async def entrenar(hiperparametros: HiperparametrosArbol):
-    reporte, arbol, matriz = arbolService.entrenar(hiperparametros)
+    reporte, arbol, matriz = arbolService.entrenar(dataService,hiperparametros)
     return {"reporte": reporte, "arbol_base64": arbol, "matriz_base64": matriz}
 
 @router.post("/predecir")
